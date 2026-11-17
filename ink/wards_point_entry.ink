@@ -16,6 +16,7 @@ VAR basement_cleared = false
 VAR boss_defeated = false
 VAR atrium_door_unlocked = false
 VAR atrium_reached = false
+VAR atrium_intro_seen = false
 VAR inside_atrium = false
 VAR secured = false
 VAR departed = false
@@ -234,7 +235,7 @@ The competing radio contact ends. Nobody has received the key.
 -> foyer
 
 === main_floor ===
-The public floor has library stacks, reading rooms, offices and civic reference areas. The stained glass atrium is visible above the blocked stairway.
+The public floor has library stacks, reading rooms, offices and civic reference areas. The upper glass atrium is visible above the blocked stairway.
 + {not main_floor_cleared} [Clear the remaining infected on the main floor] -> clear_main_floor
 + {not waldo_seen} [Enter the children's corner] -> waldo
 + {not medicine_seen} [Examine Medicine & Health] -> medicine
@@ -360,7 +361,10 @@ The glass atrium opens above Eli: sunlight by day, city lights and stars by nigh
 
 === atrium ===
 // WPL_ATRIUM_RADIO_CALLS requires qualified entry and actual presence here.
-The quiet is a contrast to the kitchen. This space could become several very different things.
+{ not atrium_intro_seen:
+    The quiet is a contrast to the kitchen. This space could become several very different things.
+    ~ atrium_intro_seen = true
+}
 + {atrium_reached && entrance_secured && radio_call_complete && not pk_question_1} [Question the Peacekeepers about their plan (1/3)] -> pk_q1_route
 + {atrium_reached && entrance_secured && radio_call_complete && not pk_question_2} [Question the Peacekeepers about their plan (2/3)] -> pk_q2_route
 + {atrium_reached && entrance_secured && radio_call_complete && not pk_question_3} [Question the Peacekeepers about their plan (3/3)] -> pk_q3_route
