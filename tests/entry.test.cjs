@@ -76,11 +76,11 @@ test('peacekeeper intro, key event and opposing radio; original brief preserved'
 test('Bastion opening selects Peacekeeper rival and leaves ownership uncommitted', () => {
   const {story, brief} = start('BASTION');
   assert.equal(brief.lines.filter(l => l.startsWith('Bastion representative:') || l.startsWith('Eli:')).length, 30);
-  assert.equal(brief.lines.some(l => /^Bastion representative:\\s*"\\s*$/.test(l)), false, 'No orphan quotation-only passage');
-  assert.match(brief.lines.join('\\n'), /We have some people that know the government pukes/);
-  assert.match(brief.lines.join('\\n'), /It is only a matter of time before they want that building/);
-  assert.match(brief.lines.join('\\n'), /They have an observation post set up down the block/);
-  assert.match(brief.lines.join('\\n'), /Then we are fighting them and the infected in the street/);
+  assert.equal(brief.lines.some(l => /^Bastion representative:\s*"\s*$/.test(l)), false, 'No orphan quotation-only passage');
+  assert.match(brief.lines.join('\n'), /We have some people that know the government pukes/);
+  assert.match(brief.lines.join('\n'), /It is only a matter of time before they want that building/);
+  assert.match(brief.lines.join('\n'), /They have an observation post set up down the block/);
+  assert.match(brief.lines.join('\n'), /Then we are fighting them and the infected in the street/);
   const radio = lock(story);
   assert.equal(radio.lines.filter(l => l.startsWith('Peacekeeper radio contact:') || l.startsWith('Eli:')).length, 17);
   assert.match(radio.lines.join('\n'), /chance to prove it/);
