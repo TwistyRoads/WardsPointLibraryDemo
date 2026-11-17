@@ -11,7 +11,7 @@ const browserRuntime = path.join(root, 'web', 'ink.js');
 let story;
 try {
   const diagnostics = (message, type) => console.error('Ink ' + type + ': ' + message);
-  story = new Compiler(fs.readFileSync(input, 'utf8'), new CompilerOptions('wards_point_entry.ink', [], false, diagnostics)).Compile();
+  story = new Compiler(fs.readFileSync(input, 'utf8'), new CompilerOptions(null, [], false, diagnostics)).Compile();
 } catch (error) {
   // The distributed Ink compiler is minified into one line; printing the
   // exception's full stack floods CI and hides the useful diagnostic.
