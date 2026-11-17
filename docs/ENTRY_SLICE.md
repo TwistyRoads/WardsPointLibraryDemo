@@ -4,7 +4,7 @@ This Ink adaptation implements the initial two faction briefings, first library 
 
 ## Source fidelity
 
-- Both briefings reproduce the source's **39 Peacekeeper** or **29 Bastion** spoken passages, extracted from `WPL_01_HOOK.md`.
+- Both briefings reproduce the source's **39 Peacekeeper** or **30 Bastion** spoken passages, extracted from `WPL_01_HOOK.md`. The Bastion passage beginning “Look” spans multiple source lines and includes performance directions; both spoken paragraphs are preserved.
 - Both rival radio introductions reproduce **12 Bastion** or **17 Peacekeeper** spoken passages, extracted from `WPL_03_COMPETING_CLAIM.md`.
 - Speaker roles remain neutral (`CHARACTER_A` / `CHARACTER_B` in the original; faction-specific role labels here). Canonical character names are not invented.
 - Obsidian wiki-link markup inside dialogue is rendered as its visible label, without changing the spoken words.
