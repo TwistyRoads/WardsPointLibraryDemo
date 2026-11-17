@@ -45,6 +45,12 @@
       ['Entrance key', currentValue('key_obtained') ? 'Held' : 'Not held'],
       ['Door secured', currentValue('entrance_secured') ? 'Yes' : 'No'],
       ['Rival contact', currentValue('radio_call_complete') ? 'Heard' : 'Pending'],
+      ['Main floor', currentValue('main_floor_cleared') ? 'Clear' : 'Not clear'],
+      ['Basement', currentValue('basement_cleared') ? 'Clear' : 'Not clear'],
+      ['Kitchen threat', currentValue('boss_defeated') ? 'Defeated' : 'Active'],
+      ['Atrium deadbolt', currentValue('atrium_door_unlocked') ? 'Released' : 'Blocked'],
+      ['Qualified atrium', currentValue('atrium_reached') ? 'Reached' : 'Pending'],
+      ['Security', currentValue('secured') ? 'Secured' : 'Unresolved'],
       ['Ownership', 'Undecided']
     ];
     stateNode.replaceChildren();
