@@ -2,9 +2,9 @@
 
 A text-only, browser-playable adaptation of **Joseph Kristiansen's Wards Point Library**, a noncommercial Dying Light 2–style quest design sample.
 
-## Current milestone: entry vertical slice V0.01
+## Current milestone: exploration vertical slice V0.02
 
-The **first playable slice is implemented and tested on the development branch**. This is **not yet the full mission**.
+The **exploration and atrium slice is implemented and tested on the development branch**. This is **not yet the completed mission**.
 
 It includes:
 
@@ -12,9 +12,13 @@ It includes:
 - First entrance into Wards Point, information kiosk key, blocked atrium stairs and exploratory navigation.
 - The required distinction between possessing the key and **locking the front entrance**.
 - Rival radio introduction triggered by the door event, with the correct opposing-faction variant.
+- Player-led public-floor and basement exploration, situational barks, optional evidence, and clearing infected as text actions.
+- Kitchen boss encounter, separate atrium-door deadbolt, and qualified physical entry to the glass atrium.
+- All 12 source-authored atrium question sequences for the two factions, matched to each faction's initial/counter-claimant role; all optional and nonbinding.
+- Recovery for an incomplete atrium exit, including floor-clearance invalidation if the front door was left unsecured, with no boss respawn.
 - Browser reader, scene controls, restart, and a live Ink mission-state panel.
 
-**Not implemented:** main floor clearance, basement, kitchen boss, atrium, optional radio consultations, early-exit recovery, report/handover, winner/loser outcomes or downstream consequences. There is no faction ownership choice in this slice.
+**Not implemented:** successful report/key handover, winner/loser outcomes, associated reputation changes, or downstream world-state transformations. Text interactions stand in for gameplay combat, stealth, and traversal; they are not a combat simulation. There is no faction ownership choice in this slice.
 
 ## Run locally
 
@@ -35,7 +39,7 @@ Open [http://localhost:8000](http://localhost:8000). Opening `web/index.html` di
 - `source/`: selected, preserved original design documents from the Wards Point Library vault (not the entire Obsidian archive).
 - `ink/`: playable adaptation, with both original dialogue and newly written navigation connective tissue clearly distinguished.
 - `web/`: static browser reader, no accounts or backend.
-- `tests/`: first-slice compiler and route assertions.
+- `tests/`: compiler and route assertions for briefings, security, optional consultations and missed-door recovery.
 - `docs/SOURCE_AUDIT.md`, `docs/TRACEABILITY.md`, `docs/ENTRY_SLICE.md`: documented fidelity and conversion choices.
 
 The starting prompt chooses **inherited faction standing** for a standalone demo. In the full design, that standing selects the opening briefing, **not** the final library owner. Ownership is irrevocably committed only on the **first successful report and key handover**; the losing faction has a subsequent independent response. Those mechanics are documented but not yet implemented in the browser.
