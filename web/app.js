@@ -89,7 +89,9 @@
     continueButton.hidden = !story.canContinue;
     revealButton.hidden = !story.canContinue;
     if (!story.canContinue && story.currentChoices.length === 0) {
-      messageNode.textContent = 'Entry demonstration complete. You can restart to experience the other faction opening.';
+      messageNode.textContent = currentValue('secured')
+        ? 'Wards Point secured. Restart to explore another route or faction.'
+        : 'This exploration run has ended. Restart to try another route or faction.';
     } else {
       messageNode.textContent = '';
     }
