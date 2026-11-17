@@ -375,17 +375,41 @@ The quiet is a contrast to the kitchen. This space could become several very dif
 -> kitchen
 
 === pk_q1_route ===
-{ initial_claimant == "PK": -> pk_i_q1 - else: -> pk_c_q1 }
+{ initial_claimant == "PK":
+    -> pk_i_q1
+- else:
+    -> pk_c_q1
+}
 === pk_q2_route ===
-{ initial_claimant == "PK": -> pk_i_q2 - else: -> pk_c_q2 }
+{ initial_claimant == "PK":
+    -> pk_i_q2
+- else:
+    -> pk_c_q2
+}
 === pk_q3_route ===
-{ initial_claimant == "PK": -> pk_i_q3 - else: -> pk_c_q3 }
+{ initial_claimant == "PK":
+    -> pk_i_q3
+- else:
+    -> pk_c_q3
+}
 === bas_q1_route ===
-{ initial_claimant == "BASTION": -> bas_i_q1 - else: -> bas_c_q1 }
+{ initial_claimant == "BASTION":
+    -> bas_i_q1
+- else:
+    -> bas_c_q1
+}
 === bas_q2_route ===
-{ initial_claimant == "BASTION": -> bas_i_q2 - else: -> bas_c_q2 }
+{ initial_claimant == "BASTION":
+    -> bas_i_q2
+- else:
+    -> bas_c_q2
+}
 === bas_q3_route ===
-{ initial_claimant == "BASTION": -> bas_i_q3 - else: -> bas_c_q3 }
+{ initial_claimant == "BASTION":
+    -> bas_i_q3
+- else:
+    -> bas_c_q3
+}
 
 === pk_i_q1 ===
 // Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Initial Claimant, Question 1.
