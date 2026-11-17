@@ -159,3 +159,41 @@ test('evidence examination is optional, not a hidden completion checklist', () =
   choose(story, 'Leave Wards Point through');
   assert.equal(state(story, 'secured'), true);
 });
+
+test('all twelve atrium question scripts can be visited once; calls never set ownership or security', () => {
+  for (const initial of ['PK', 'BASTION']) {
+    const {story} = start(initial);
+    lock(story);
+    clearAndReachKitchen(story);
+    enterAtrium(story);
+    for (let i = 1; i <= 3; i++) {
+      const pk = choose(story, 'Question the Peacekeepers about their plan (' + i + '/3)');
+      assert.ok(pk.lines.length >= 6, 'Peacekeeper conversation ' + i + ' for ' + initial);
+      assert.equal(state(story, 'pk_question_' + i), true);
+      assert.ok(!pk.choices.some(c => c.includes('Peacekeepers about their plan (' + i + '/3)')));
+    }
+    for (let i = 1; i <= 3; i++) {
+      const bas = choose(story, 'Question Bastion about their plan (' + i + '/3)');
+      assert.ok(bas.lines.length >= 6, 'Bastion conversation ' + i + ' for ' + initial);
+      assert.equal(state(story, 'bastion_question_' + i), true);
+      assert.ok(!bas.choices.some(c => c.includes('Bastion about their plan (' + i + '/3)')));
+    }
+    assert.equal(state(story, 'secured'), false, 'calls do not qualify security or handover');
+    choose(story, 'Leave Wards Point through');
+    assert.equal(state(story, 'secured'), true);
+  }
+});
+
+test('a physically entered atrium does not replace mandatory floor clearing; optional calls may be skipped', () => {
+  const {story} = start('PK');
+  lock(story);
+  choose(story, 'Descend toward Research & Archives');
+  choose(story, 'Climb the service shaft');
+  enterAtrium(story);
+  assert.equal(state(story, 'atrium_reached'), true);
+  assert.equal(state(story, 'main_floor_cleared'), false);
+  assert.equal(state(story, 'basement_cleared'), false);
+  const exit = choose(story, 'Leave Wards Point through');
+  assert.equal(state(story, 'secured'), false);
+  assert.ok(exit.choices.some(c => c.includes('Return through the main public entrance')));
+});
