@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { Compiler } = require('inkjs/full');
+const { Compiler, CompilerOptions } = require('inkjs/full');
 
 const root = path.resolve(__dirname, '..');
 const input = path.join(root, 'ink', 'wards_point_entry.ink');
@@ -10,7 +10,8 @@ const runtime = path.join(root, 'node_modules', 'inkjs', 'dist', 'ink.js');
 const browserRuntime = path.join(root, 'web', 'ink.js');
 let story;
 try {
-  story = new Compiler(fs.readFileSync(input, 'utf8')).Compile();
+  const diagnostics = (message, type) => console.error('Ink ' + type + ': ' + message);
+  story = new Compiler(fs.readFileSync(input, 'utf8'), new CompilerOptions('wards_point_entry.ink', [], false, diagnostics)).Compile();
 } catch (error) {
   // The distributed Ink compiler is minified into one line; printing the
   // exception's full stack floods CI and hides the useful diagnostic.
