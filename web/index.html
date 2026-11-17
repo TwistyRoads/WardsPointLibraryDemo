@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A text-only interactive narrative adaptation of the Wards Point Library quest design by Joseph Kristiansen.">
+  <title>Wards Point Library · Interactive Narrative</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./ink.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#transcript">Skip to story</a>
+  <div class="shell">
+    <header class="masthead">
+      <div>
+        <a href="https://harvestknights.com/portfolio/wards-point-library/" class="eyebrow">Joseph Kristiansen / Narrative Design</a>
+        <h1>Wards Point Library</h1>
+        <p class="subtitle">Two factions. One contested library. An independent actor caught between them.</p>
+      </div>
+      <span class="edition">EXPLORATION SLICE · V0.02</span>
+    </header>
+    <div class="workspace">
+      <main class="reading">
+        <div class="section-intro">
+          <h2>Enter Wards Point</h2>
+          <p>This playable work-in-progress covers both opening briefings, library exploration, the cafeteria kitchen, and optional faction consultations in the glass atrium. Ownership resolution is the next milestone.</p>
+        </div>
+        <div class="transcript" id="transcript" role="log" aria-live="polite" aria-relevant="additions" aria-label="Narrative transcript"></div>
+        <div id="choices" class="choices" aria-label="Story choices"></div>
+        <div id="controls" class="controls">
+          <button id="continue" type="button" class="primary" hidden>Continue reading</button>
+          <button id="read-to-choice" type="button" hidden>Reveal through next choice</button>
+          <button id="restart" type="button">Restart</button>
+        </div>
+        <div id="message" class="message" role="status"></div>
+      </main>
+      <aside class="sidebar" aria-label="Mission state">
+        <p class="eyebrow">Mission state</p>
+        <dl id="state">
+          <div><dt>Initial claimant</dt><dd>Not selected</dd></div>
+        </dl>
+        <div class="rule"></div>
+        <h3>About this adaptation</h3>
+        <p>Spoken dialogue is sourced from WPL_01_HOOK, WPL_03_COMPETING_CLAIM, and the four versions of WPL_06_ATRIUM consultation; situational barks come from the exploration beats. Traversal, encounters and connective prose are text-adaptation work.</p>
+        <p>Your setup establishes earlier faction standing; it does <strong>not</strong> award the library to either side. Clearing infected and overcoming the kitchen boss are deliberate text interactions, not a combat simulation.</p>
+        <p class="small">This is an independently authored, noncommercial Dying Light 2–style portfolio exercise. Not an official Techland or Dying Light 2 product.</p>
+        <a class="documentation" href="https://github.com/TwistyRoads/WardsPointLibraryDemo">Source and design documents</a>
+      </aside>
+    </div>
+    <footer>Original design and dialogue © Joseph Kristiansen. Browser adaptation for professional portfolio review.</footer>
+  </div>
+</body>
+</html>

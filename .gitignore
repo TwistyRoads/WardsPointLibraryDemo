@@ -1,0 +1,4 @@
+node_modules/
+web/story.json
+web/ink.js
+.DS_Store

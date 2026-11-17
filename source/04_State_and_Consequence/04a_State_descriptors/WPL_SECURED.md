@@ -1,0 +1,11 @@
+[[WPL_SECURED]] = true when:
+
+[[WPL_MAIN_FLOOR_CLEARED]] = true
+AND
+[[WPL_BASEMENT_CLEARED]] = true
+AND
+[[WPL_BOSS_DEFEATED]] = true
+AND
+[[WPL_MAIN_ENTRANCE_SECURED]] = true
+AND
+[[WPL_ATRIUM_REACHED]] = true
