@@ -116,7 +116,10 @@ Bastion representative: "Food, man. It is close enough to the edge we can hunt f
 Bastion representative: "It'll be a hub for community man. What we have, everyone can see. What we decide, we decide there."
 Eli: "Okay, I can see that, but I still don't get why it has to be alone."
 Bastion representative: "Look"
-Bastion representative: "
+The Bastion representative leans close and whispers.
+Bastion representative: "We have some people that know the government pukes. They are prepping for something. Don't know what yet, but, they are grabbing resources. Buildings, medicine. Staking claims. It is only a matter of time before they want that building."
+The representative pulls back and resumes a normal speaking voice.
+Bastion representative: "Plus those authority pukes are watching it close. They have an observation post set up down the block. I don't want to see it fall into their hands. We lose the hunting, and the communal space. If we try to move in, they'll bounce us. Then we are fighting them and the infected in the street."
 Eli: "So a quick in and out?"
 Bastion representative: "Mostly. It's a nest, nothing you shouldn't be able to handle. So yeah, pop in. Make sure you lock the door to keep the infected out. Clear it, and come back and tell me. We can slip in quick if there are no infected inside."
 Eli: "And that's it?"
