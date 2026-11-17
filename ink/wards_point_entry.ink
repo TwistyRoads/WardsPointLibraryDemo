@@ -1,7 +1,8 @@
-// Wards Point Library: playable entry vertical slice, V0.01.
+// Wards Point Library: exploration and atrium vertical slice, V0.02.
 // Authored dialogue below is taken from WPL_01_HOOK and WPL_03_COMPETING_CLAIM.
 // The navigational choices and connective action prose are adaptation material.
-// This does not yet implement combat, clearing, atrium calls, debrief, or ownership.
+// Gameplay encounters are represented by deliberate text actions, not a combat simulation.
+// This does not yet implement report/handover, losing faction consequences, or ownership.
 
 VAR initial_claimant = ""
 VAR brief_complete = false
@@ -10,10 +11,35 @@ VAR key_obtained = false
 VAR entrance_secured = false
 VAR radio_call_complete = false
 
+VAR main_floor_cleared = false
+VAR basement_cleared = false
+VAR boss_defeated = false
+VAR atrium_door_unlocked = false
+VAR atrium_reached = false
+VAR inside_atrium = false
+VAR secured = false
+VAR departed = false
+VAR recovery_visits = 0
+VAR waldo_seen = false
+VAR stairs_bark_seen = false
+VAR medicine_seen = false
+VAR archives_sign_seen = false
+VAR community_seen = false
+VAR generator_seen = false
+VAR municipal_archive_seen = false
+VAR elevator_seen = false
+VAR kitchen_bark_seen = false
+VAR pk_question_1 = false
+VAR pk_question_2 = false
+VAR pk_question_3 = false
+VAR bastion_question_1 = false
+VAR bastion_question_2 = false
+VAR bastion_question_3 = false
+
 -> setup
 
 === setup ===
-WARDS POINT LIBRARY — ENTRY DEMO
+WARDS POINT LIBRARY — EXPLORATION DEMO
 The opening faction is chosen by Eli's prior faction standing in the full quest. This standalone setup chooses that inherited context, not the library's eventual owner.
 * [Peacekeeper standing equal to or higher than Bastion (tie/default)]
     ~ initial_claimant = "PK"
@@ -109,29 +135,24 @@ An information kiosk sits just inside the main entrance. The key required to sec
 -> foyer
 
 === foyer ===
-// Adaptation navigation interface; source progression in WPL_02_ARRIVAL.
-You are at the public entrance to Wards Point Library.
-+ [Look behind the information kiosk] -> kiosk
-+ [Try to lock the main entrance] -> door
-+ [Examine the blocked stairs to the upper atrium] -> stairs
-+ [Scout the main floor without locking the entrance] -> floor_glance
+// Adaptation navigation choices; the original allows entry without first securing the door.
+You are at the public entrance of Wards Point Library.
++ {not key_obtained} [Look behind the information kiosk] -> kiosk
++ {key_obtained} [Inspect the empty key hook] -> kiosk_empty
++ {not entrance_secured} [Try to lock the main entrance] -> door
++ {not stairs_bark_seen} [Inspect the blocked atrium stairs] -> foyer_stairs
++ [Explore the main floor] -> main_floor
++ [Descend toward Research & Archives] -> basement_entry
 
 === kiosk ===
-{ key_obtained:
-    -> kiosk_empty
-- else:
-    -> kiosk_key
-}
-
-=== kiosk_key ===
-The key hangs behind the information kiosk. Taking it will not secure the door by itself.
-* [Take the key] 
+The entrance key hangs behind the information kiosk. Taking it will not secure the door by itself.
+* [Take the key]
     ~ key_obtained = true
     -> foyer
 * [Leave the key for now] -> foyer
 
 === kiosk_empty ===
-The hook is empty; the key is now in Eli's possession.
+The hook is empty; Eli has the key.
 -> foyer
 
 === door ===
@@ -142,22 +163,24 @@ The hook is empty; the key is now in Eli's possession.
 }
 
 === no_key ===
-The main entrance cannot be secured without the key hanging behind the information kiosk.
+The door cannot be locked without the key behind the information kiosk.
 -> foyer
 
-=== stairs ===
-The main stairs to the upper glass atrium are blocked. The route through the lower interior remains to be explored.
--> foyer
-
-=== floor_glance ===
-The main floor holds stacks, reading areas and adjoining offices. Eli can scout ahead, but the entrance is still unsecured.
+=== foyer_stairs ===
+The main stairs to the upper glass atrium are blocked.
+Eli: "Yeah, not getting up that way"
+~ stairs_bark_seen = true
 -> foyer
 
 === lock_entrance ===
-// Only the action of locking the entrance completes WPL_EVENT02_DOOR.
+// WPL_EVENT02_DOOR: only using the key to lock the door sets this state.
 ~ entrance_secured = true
-Eli turns the recovered key in the lock. The main entrance is secured.
--> rival_select
+Eli turns the recovered key. The main entrance is secured against further infected.
+{ radio_call_complete:
+    -> foyer
+- else:
+    -> rival_select
+}
 
 === rival_select ===
 { initial_claimant == "PK":
@@ -181,7 +204,7 @@ Bastion radio contact: "That's all I'm asking, brother. Finish what you're doing
 Eli: "Kinda busy man."
 Bastion radio contact: "Stay safe."
 ~ radio_call_complete = true
--> slice_end
+-> after_radio
 
 === rival_pk ===
 // Original spoken dialogue: WPL_03_COMPETING_CLAIM, Peacekeeper Counter Brief.
@@ -203,9 +226,357 @@ Peacekeeper radio contact: "No."
 Peacekeeper radio contact: "I'm asking you to give us the chance to prove it."
 Peacekeeper radio contact: "When you're done in there, come to us first."
 ~ radio_call_complete = true
--> slice_end
+-> after_radio
 
-=== slice_end ===
-The rival call ends. Nobody has received the key, and ownership remains undecided.
-This entry-route prototype ends here. Main-floor exploration and the eventual report and handover are the next implementation stage.
-* [Finish the entry demonstration] -> END
+=== after_radio ===
+// WPL_03_COMPETING_CLAIM ends without changing ownership.
+The competing radio contact ends. Nobody has received the key.
+-> foyer
+
+=== main_floor ===
+The public floor has library stacks, reading rooms, offices and civic reference areas. The stained glass atrium is visible above the blocked stairway.
++ {not main_floor_cleared} [Clear the remaining infected on the main floor] -> clear_main_floor
++ {not waldo_seen} [Enter the children's corner] -> waldo
++ {not medicine_seen} [Examine Medicine & Health] -> medicine
++ {not archives_sign_seen} [Follow the Research & Archives signs] -> archives_sign
++ {not community_seen} [Inspect the community meeting rooms] -> community
++ [Go back to the main entrance] -> foyer
++ [Descend to Research & Archives] -> basement_entry
+
+=== clear_main_floor ===
+// Abstracted encounter. WPL_MAIN_FLOOR_CLEARED is earned by clearing infected, not collecting evidence.
+~ main_floor_cleared = true
+{ not waldo_seen:
+    Eli stops a red-and-white striped infected by the children's shelves.
+    Eli: "There's Waldo"
+    ~ waldo_seen = true
+}
+The last infected falls. The main public floor is clear.
+-> main_floor
+
+=== waldo ===
+// WPL_EVENT04_WALDO: the bark fires only after killing the distinctive infected.
+The children's corner contains one infected wearing a red-and-white striped sweater.
+* [Deal with the infected]
+    ~ waldo_seen = true
+    Eli: "There's Waldo"
+    -> main_floor
+* [Withdraw for now] -> main_floor
+
+=== medicine ===
+Medicine & Health shelves still hold practical medical reference books.
+~ medicine_seen = true
+Eli: "That could be handy."
+-> main_floor
+
+=== archives_sign ===
+An old wayfinding board points down to Research & Archives.
+~ archives_sign_seen = true
+Eli: "Archives and infected, lower level please!"
+-> main_floor
+
+=== community ===
+Meeting rooms and multipurpose spaces fill the end of the floor.
+~ community_seen = true
+Eli: "This is bigger than I thought!"
+-> main_floor
+
+=== basement_entry ===
+Eli descends into the darker archive level and the library's mechanical spaces.
+{ not entrance_secured:
+    Initial claimant (radio): "Eli. The front door. Lock the damn door."
+}
+-> basement
+
+=== basement ===
+Records, practical reference books, heating equipment and the generator survive below the public floors.
++ {not basement_cleared} [Clear the remaining infected in the basement] -> clear_basement
++ {not generator_seen} [Inspect the backup generator and boiler] -> generator
++ {not municipal_archive_seen} [Examine the municipal records and technical shelves] -> records
++ {not elevator_seen} [Investigate the open elevator service shaft] -> elevator
++ [Return upstairs to the main floor] -> main_floor
++ [Climb the service shaft toward the cafeteria kitchen] -> kitchen_entry
+
+=== clear_basement ===
+// Abstracted encounter. Clearance is not contingent on looking at every document or machine.
+~ basement_cleared = true
+After a final sweep, no infected remain in the basement.
+-> basement
+
+=== generator ===
+The basement contains a robust backup generator and a boiler serving the building.
+~ generator_seen = true
+Eli: "Ah. There you are."
+-> basement
+
+=== records ===
+Municipal building plans, utility records and technical reference material are preserved in the archive.
+~ municipal_archive_seen = true
+Eli: "Well... somebody kept everything."
+-> basement
+
+=== elevator ===
+Repeated scrapes inside the open shaft suggest something has been travelling through it.
+~ elevator_seen = true
+Eli: "Something's been using this... a lot"
+-> basement
+
+=== kitchen_entry ===
+Eli climbs out of the elevator shaft into an institutional cafeteria kitchen.
+{ not kitchen_bark_seen:
+    Eli: "They have a cafeteria here!"
+    ~ kitchen_bark_seen = true
+}
+-> kitchen
+
+=== kitchen ===
+The commercial kitchen is enclosed and hostile. The double doors to the atrium are blocked.
++ {not boss_defeated} [Confront the infected occupying the kitchen] -> kitchen_boss
++ {boss_defeated && not atrium_door_unlocked} [Inspect and clear the atrium door deadbolt] -> atrium_lock
++ {atrium_door_unlocked} [Open the atrium doors and cross into the glass atrium] -> enter_atrium
++ [Retreat through the service shaft to the basement] -> basement
+
+=== kitchen_boss ===
+// Abstracted mandatory boss encounter. Gameplay enemy design remains outside narrative scope.
+After a hard fight, the infected occupying the cafeteria kitchen is defeated.
+~ boss_defeated = true
+The atrium doors can now be inspected, but they remain physically locked.
+-> kitchen
+
+=== atrium_lock ===
+// WPL_E06_ATRIUM_DOOR_LOCK: boss death only permits this second, separate action.
+~ atrium_door_unlocked = true
+Eli clears the obstruction and releases the deadbolt. The double doors can now be opened.
+-> kitchen
+
+=== enter_atrium ===
+// Physical crossing, not boss death or unlocking, is the qualification opportunity.
+~ inside_atrium = true
+{ entrance_secured && radio_call_complete:
+    ~ atrium_reached = true
+}
+The glass atrium opens above Eli: sunlight by day, city lights and stars by night. The old cafeteria offers room for shelter, training, cultivation or communal use.
+-> atrium
+
+=== atrium ===
+// WPL_ATRIUM_RADIO_CALLS requires qualified entry and actual presence here.
+The quiet is a contrast to the kitchen. This space could become several very different things.
++ {atrium_reached && entrance_secured && radio_call_complete && not pk_question_1} [Question the Peacekeepers about their plan (1/3)] -> pk_q1_route
++ {atrium_reached && entrance_secured && radio_call_complete && not pk_question_2} [Question the Peacekeepers about their plan (2/3)] -> pk_q2_route
++ {atrium_reached && entrance_secured && radio_call_complete && not pk_question_3} [Question the Peacekeepers about their plan (3/3)] -> pk_q3_route
++ {atrium_reached && entrance_secured && radio_call_complete && not bastion_question_1} [Question Bastion about their plan (1/3)] -> bas_q1_route
++ {atrium_reached && entrance_secured && radio_call_complete && not bastion_question_2} [Question Bastion about their plan (2/3)] -> bas_q2_route
++ {atrium_reached && entrance_secured && radio_call_complete && not bastion_question_3} [Question Bastion about their plan (3/3)] -> bas_q3_route
++ [Return to the cafeteria kitchen] -> leave_atrium_to_kitchen
++ [Leave Wards Point through the far atrium exit] -> departure
+
+=== leave_atrium_to_kitchen ===
+~ inside_atrium = false
+-> kitchen
+
+=== pk_q1_route ===
+{ initial_claimant == "PK": -> pk_i_q1 - else: -> pk_c_q1 }
+=== pk_q2_route ===
+{ initial_claimant == "PK": -> pk_i_q2 - else: -> pk_c_q2 }
+=== pk_q3_route ===
+{ initial_claimant == "PK": -> pk_i_q3 - else: -> pk_c_q3 }
+=== bas_q1_route ===
+{ initial_claimant == "BASTION": -> bas_i_q1 - else: -> bas_c_q1 }
+=== bas_q2_route ===
+{ initial_claimant == "BASTION": -> bas_i_q2 - else: -> bas_c_q2 }
+=== bas_q3_route ===
+{ initial_claimant == "BASTION": -> bas_i_q3 - else: -> bas_c_q3 }
+
+=== pk_i_q1 ===
+// Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Initial Claimant, Question 1.
+Eli: "You said this place was for the city. I found the archives downstairs. Building plans, utilities, technical manuals... a lot of useful shit."
+Eli: "Who gets access to that?"
+Peacekeeper representative: "Not everyone, immediately."
+Eli: "That's what I thought."
+Peacekeeper representative: "Because some of it matters too much to lose, Eli. We catalogue it, protect it, and put people who know what they're looking at in charge of it."
+Peacekeeper representative: "That doesn't mean nobody else gets it. It means we don't let the first person who needs kindling burn the electrical plans for half the city."
+~ pk_question_1 = true
+-> atrium
+
+=== pk_i_q2 ===
+// Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Initial Claimant, Question 2.
+Eli: "You talked about the people who can't look past their next meal. Elderly, injured, people who can't fight."
+Eli: "So where do they fit in here?"
+Peacekeeper representative: "Here, if we can make it work."
+Eli: "In the library?"
+Peacekeeper representative: "Some of them. Medical space, temporary shelter, training for the people who can still work. Maybe more once we know what the building can support."
+Peacekeeper representative: "But somebody has to organize it. Beds, food, medicine, power... none of that appears because everyone agrees it would be nice."
+~ pk_question_2 = true
+-> atrium
+
+=== pk_i_q3 ===
+// Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Initial Claimant, Question 3.
+Eli: "You keep saying organization. Process. Local control."
+Eli: "How long before that turns into the same shit we already had?"
+Peacekeeper representative: "I don't know."
+Eli: "That's reassuring."
+Peacekeeper representative: "I'm serious. I can't promise nobody will ever abuse it."
+Peacekeeper representative: "What I can promise is that doing nothing doesn't protect anyone either. Somebody has to keep the generator running. Somebody has to decide where the medicine goes. Somebody has to make sure those records are still there next year."
+Peacekeeper representative: "You don't have to trust the word 'authority.' I don't much either anymore."
+Peacekeeper representative: "But the work still has to get done."
+~ pk_question_3 = true
+-> atrium
+
+=== pk_c_q1 ===
+// Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Counter-Claimant, Question 1.
+Eli: "You said people need process."
+Eli: "I'm standing in a building full of things people need. So what does 'process' actually mean here?"
+Peacekeeper radio contact: "It means we don't start stripping the place for whatever solves today's problem."
+Peacekeeper radio contact: "We inventory what's here. Power. Heat. Records. Technical material. Space."
+Peacekeeper radio contact: "Then we decide what can be used now and what has to survive long enough to matter later."
+Eli: "And who decides that?"
+Peacekeeper radio contact: "People responsible for making sure there is still something left to decide about tomorrow."
+~ pk_question_1 = true
+-> atrium
+
+=== pk_c_q2 ===
+// Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Counter-Claimant, Question 2.
+Eli: "I found the records downstairs."
+Eli: "Plans for buildings. Utilities. Repairs. Half the city might be sitting in those cabinets."
+Eli: "What would you do with them?"
+Peacekeeper radio contact: "Protect them first."
+Eli: "Meaning lock them up."
+Peacekeeper radio contact: "Meaning don't lose them."
+Peacekeeper radio contact: "Then get them into the hands of people who can actually use them. Engineers. Repair crews. Anyone we're training to keep systems running."
+Peacekeeper radio contact: "We lose that archive and we don't get another one."
+~ pk_question_2 = true
+-> atrium
+
+=== pk_c_q3 ===
+// Source-authored exchange: WPL_06_ATRIUM, PeaceKeeper Counter-Claimant, Question 3.
+Eli: "You also told me planning wasn't the problem. People were."
+Eli: "That's convenient."
+Peacekeeper radio contact: "It's also true."
+Eli: "GRE had experts. Governments had plans. The military had command structures."
+Eli: "Everybody had somebody responsible."
+Eli: "And here we are."
+Peacekeeper radio contact: "Yeah. Here we are."
+Peacekeeper radio contact: "So tell me what the alternative is."
+Peacekeeper radio contact: "Nobody keeps track of the medicine? Nobody maintains the generator? Nobody protects those plans because deciding who gets access feels too much like authority?"
+Peacekeeper radio contact: "We can fuck this up, Eli. I'm not pretending we can't."
+Peacekeeper radio contact: "But abandoning the work because somebody abused it before guarantees we fuck it up."
+~ pk_question_3 = true
+-> atrium
+
+=== bas_i_q1 ===
+// Source-authored exchange: WPL_06_ATRIUM, Bastion Initial Claimant, Question 1.
+Eli: "You said what you have, everyone gets to see. What you decide, you decide together."
+Eli: "How does that work with this place?"
+Bastion representative: "Same way, brother. People using the place get a voice in what happens to it."
+Eli: "Everybody?"
+Bastion representative: "Everybody affected by it gets heard. Doesn't mean every dumb idea wins."
+Bastion representative: "But nobody gets to sit in an office somewhere and tell the people living here what they need."
+Eli: "So meetings."
+Bastion representative: "Yeah, man. Horrible fucking meetings."
+~ bastion_question_1 = true
+-> atrium
+
+=== bas_i_q2 ===
+// Source-authored exchange: WPL_06_ATRIUM, Bastion Initial Claimant, Question 2.
+Eli: "I found the archive downstairs. Building plans, utilities, repair manuals... things people might need years from now."
+Eli: "What happens to that?"
+Bastion representative: "We use it."
+Eli: "That's not what I asked."
+Bastion representative: "I know."
+Bastion representative: "We don't lock it away. Somebody needs a plan, a manual, whatever, they use it."
+Eli: "And who makes sure it survives?"
+Bastion representative: "We do."
+Bastion representative: "But I'm not going to bullshit you, brother. If it's between keeping somebody warm this winter and protecting a room full of paper, the person comes first."
+~ bastion_question_2 = true
+-> atrium
+
+=== bas_i_q3 ===
+// Source-authored exchange: WPL_06_ATRIUM, Bastion Initial Claimant, Question 3.
+Eli: "This is the part I'm wondering about."
+Eli: "You've got food, families, shelter, people needing things right now. What stops everything useful downstairs from getting stripped apart one emergency at a time?"
+Bastion representative: "Nothing magical."
+Bastion representative: "We remind each other there is a tomorrow."
+Eli: "That's it?"
+Bastion representative: "That's a lot, man."
+Bastion representative: "Look, maybe we lose things. Maybe somebody makes a bad call. But I'd rather have the people living with that decision make it than somebody protecting a blueprint while the family upstairs freezes."
+Bastion representative: "We're trying to save people, Eli. The rest matters because it helps us do that."
+~ bastion_question_3 = true
+-> atrium
+
+=== bas_c_q1 ===
+// Source-authored exchange: WPL_06_ATRIUM, Bastion Counter Claimant, Question 1.
+Eli: "You said this place should belong to the people using it."
+Eli: "What does that actually mean?"
+Bastion radio contact: "Means exactly that, brother."
+Bastion radio contact: "Families living here get a say. People growing food get a say. People fixing shit get a say."
+Eli: "And nobody's in charge?"
+Bastion radio contact: "People can be responsible without owning everybody underneath them."
+Bastion radio contact: "You need somebody running the kitchen, run the kitchen. Doesn't mean they get to decide who deserves to eat."
+~ bastion_question_1 = true
+-> atrium
+
+=== bas_c_q2 ===
+// Source-authored exchange: WPL_06_ATRIUM, Bastion Counter Claimant, Question 2.
+Eli: "There's more downstairs than I expected."
+Eli: "Generator. Boiler. City plans. Technical manuals."
+Eli: "Some of that could matter to people nowhere near this building."
+Bastion radio contact: "Then let them use it."
+Eli: "Just like that?"
+Bastion radio contact: "Why not?"
+Bastion radio contact: "Copy it. Teach it. Bring somebody in who knows what they're looking at."
+Bastion radio contact: "What I don't want is somebody deciding those plans are too important for ordinary people to touch."
+Eli: "And if something gets damaged?"
+Bastion radio contact: "Then we learn not to do it again."
+Bastion radio contact: "Knowledge isn't safer because one guy has the key."
+~ bastion_question_2 = true
+-> atrium
+
+=== bas_c_q3 ===
+// Source-authored exchange: WPL_06_ATRIUM, Bastion Counter Claimant, Question 3.
+Eli: "And when what people need today clashes with what somebody might need five years from now?"
+Bastion radio contact: "Then it gets hard."
+Eli: "That's your answer?"
+Bastion radio contact: "Yeah."
+Bastion radio contact: "Anybody telling you there's an easy answer is selling you something."
+Bastion radio contact: "People starving today matter. So does tomorrow. You argue it out. You find another way if you can."
+Bastion radio contact: "But we don't sacrifice people standing in front of us because somebody with a clipboard says the future needs it more."
+Eli: "And if that costs you something you can't replace?"
+Bastion radio contact: "Then at least the people who paid that price were part of deciding it."
+~ bastion_question_3 = true
+-> atrium
+
+=== departure ===
+// WPL_EVENT06_DEPARTURE: leaving through this exit locks it behind Eli.
+~ inside_atrium = false
+~ departed = true
+The far atrium exit closes and locks behind Eli. He cannot re-enter through it.
+{ not entrance_secured:
+    ~ main_floor_cleared = false
+    ~ basement_cleared = false
+}
+{ main_floor_cleared && basement_cleared && boss_defeated && entrance_secured && atrium_reached:
+    ~ secured = true
+    -> secured_exit
+- else:
+    ~ secured = false
+    -> early_exit
+}
+
+=== secured_exit ===
+The library is secured. Eli still has the key, and no faction owns Wards Point yet.
+Reporting to a claimant and handing over the key will resolve ownership in the next release.
+* [Finish this exploration demo] -> END
+
+=== early_exit ===
+// WPL_EVENT06_EARLY_EXIT; the permanent boss/atrium progression remains recorded.
+Wards Point is not yet secured. An incomplete mission cannot be handed over.
+If the entrance was left unlocked, the main floor and basement must be cleared again. The kitchen boss remains defeated.
+* [Return through the main public entrance to finish the job] -> recover_entry
+* [Finish this exploration demo without securing the building] -> END
+
+=== recover_entry ===
+// The far-end atrium exit stays locked; recovery uses the original front-door route.
+~ recovery_visits = recovery_visits + 1
+~ departed = false
+Eli returns to the original public entrance. The atrium exit remains locked behind him.
+-> foyer
