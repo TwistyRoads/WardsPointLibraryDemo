@@ -46,7 +46,7 @@ The starting prompt chooses **inherited faction standing** for a standalone demo
 
 ## Preview and publishing
 
-On each pull request, GitHub Actions compiles and tests the story and produces a downloadable `wards-point-entry-preview` artifact containing the self-contained browser files.
+On each pull request, GitHub Actions compiles and tests the story and produces a downloadable `wards-point-exploration-preview` artifact containing the self-contained browser files.
 
 A second workflow is prepared to publish the compiled `web/` site from `main` to GitHub Pages **after the PR is reviewed and merged**. In the repository Settings → Pages, set the publishing source to **GitHub Actions** before deployment. No live public site is claimed until the Pages workflow succeeds.
 
