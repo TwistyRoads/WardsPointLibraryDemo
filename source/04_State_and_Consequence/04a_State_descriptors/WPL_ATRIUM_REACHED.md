@@ -1,0 +1,10 @@
+Initialized as [[WPL_ATRIUM_REACHED]] = "false"
+
+IF
+[[WPL_ATRIUM_REACHED]] = "false"
+AND
+[[WPL_RADIO_CALL_COMPLETE]] = true
+AND
+[[WPL_MAIN_ENTRANCE_SECURED]] = true
+THEN
+[[WPL_ATRIUM_REACHED]] = "true"
