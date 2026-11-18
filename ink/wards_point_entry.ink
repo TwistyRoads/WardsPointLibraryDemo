@@ -610,7 +610,7 @@ The far atrium exit closes and locks behind Eli. He cannot re-enter through it.
 // Both claimants become eligible only after all five WPL_SECURED prerequisites.
 ~ pk_eligible = true
 ~ bastion_eligible = true
-Eli leaves the secured library. The entrance key is still in his possession.
+The library is secured. Eli leaves with the entrance key still in his possession.
 Both factions are waiting for word. Nothing has been handed over.
 -> outside_contacts
 
