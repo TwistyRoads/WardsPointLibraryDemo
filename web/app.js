@@ -10,7 +10,7 @@
   let story;
   let storyText;
 
-  const speakerPattern = /^(Eli|Peacekeeper representative|Bastion representative|Peacekeeper radio contact|Bastion radio contact):\s*(.*)$/;
+  const speakerPattern = /^(Eli|Peacekeeper representative|Bastion representative|Peacekeeper radio contact|Bastion radio contact|Offstage voice|Group):\s*(.*)$/;
   function addLine(raw) {
     const text = raw.trim();
     if (!text) return;
@@ -19,7 +19,7 @@
     line.className = 'line ' + (match ? 'speech' : 'narration');
     if (match) {
       const speaker = match[1];
-      line.classList.add(speaker === 'Eli' ? 'eli' : speaker.startsWith('Peacekeeper') ? 'pk' : 'bastion');
+      line.classList.add(speaker === 'Eli' ? 'eli' : speaker === 'Offstage voice' || speaker === 'Group' ? 'crowd' : speaker.startsWith('Peacekeeper') ? 'pk' : 'bastion');
       const label = document.createElement('span');
       label.className = 'speaker';
       label.textContent = speaker;
