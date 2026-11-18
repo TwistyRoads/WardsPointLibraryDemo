@@ -1,28 +1,29 @@
-# Wards Point Library — Interactive Narrative Demo
+# Wards Point Library — Playable Ink Quest
 
-A text-only, browser-playable adaptation of **Joseph Kristiansen's Wards Point Library**, a noncommercial Dying Light 2–style quest design sample.
+**An original, independent, text-only narrative-design and game-writing portfolio sample by Joseph Kristiansen.** Based on the Wards Point Library quest design vault.
 
-## Current milestone: exploration vertical slice V0.02
+**Play on the web:** https://twistyroads.github.io/WardsPointLibraryDemo/
 
-The **exploration and atrium slice is implemented and tested on the development branch**. This is **not yet the completed mission**.
+> **Release:** V0.03 is the complete playable narrative loop. GitHub Pages builds from `main`; after any update, the public URL may briefly show the previous version until the publishing workflow reports success. See [Actions](https://github.com/TwistyRoads/WardsPointLibraryDemo/actions).
 
-It includes:
+## The experience
 
-- Both full source-authored opening briefings (Peacekeepers and Bastion).
-- First entrance into Wards Point, information kiosk key, blocked atrium stairs and exploratory navigation.
-- The required distinction between possessing the key and **locking the front entrance**.
-- Rival radio introduction triggered by the door event, with the correct opposing-faction variant.
-- Player-led public-floor and basement exploration, situational barks, optional evidence, and clearing infected as text actions.
-- Kitchen boss encounter, separate atrium-door deadbolt, and qualified physical entry to the glass atrium.
-- All 12 source-authored atrium question sequences for the two factions, matched to each faction's initial/counter-claimant role; all optional and nonbinding.
-- Recovery for an incomplete atrium exit, including floor-clearance invalidation if the front door was left unsecured, with no boss respawn.
-- Browser reader, scene controls, restart, and a live Ink mission-state panel.
+Eli is an independent actor asked to secure a contested public library. The Peacekeepers argue for order, continuity and long-term preservation; Bastion advocates survival through community control and autonomy. The player:
 
-**Not implemented:** successful report/key handover, winner/loser outcomes, associated reputation changes, or downstream world-state transformations. Text interactions stand in for gameplay combat, stealth, and traversal; they are not a combat simulation. There is no faction ownership choice in this slice.
+1. Selects an **inherited faction relationship context** for the standalone sample. This determines the **first briefing only**.
+2. Hears the opening argument, enters the library, retrieves the entrance key and physically locks the main doors. **Taking the key is not the same as securing the entrance.**
+3. Hears the competing radio claim, clears the main floor and basement, and encounters environmental evidence about the library's future potential.
+4. Defeats the kitchen threat as an abstract text action, clears the separate atrium deadbolt, and enters the atrium.
+5. Optionally questions **both, either, or neither** faction. The four claimant-role variants have three original questions apiece; none commits ownership.
+6. Exits the library; successful security requires five states: both floors clear, boss defeated, entrance secured, and qualified atrium entry. A failed departure permits a recoverable return. An incomplete report cannot award ownership.
+7. **Visits whichever faction contact Eli chooses to report to first.** The first *successful* report and physical key handover irrevocably determine ownership. There is **no explicit 'Choose faction' ownership menu**.
+8. Can return to the losing contact later for a distinct, role-sensitive response. Its reputation cost is recorded **once only**, never as a second ownership decision.
 
-## Run locally
+The game ends with a source-grounded **possible-future outlook** for the winning faction. The vault defines the benefits and risks of both governance choices but leaves actual later city transformation, NPC populations and numeric reputation changes to downstream production. The demo therefore records consequence *availability*, not invented future events.
 
-Requires Node.js 20+.
+## Play locally
+
+Requires Node.js 20+ and a simple local HTTP server:
 
 ```bash
 npm install
@@ -30,28 +31,38 @@ npm run check
 python3 -m http.server 8000 --directory web
 ```
 
-Open [http://localhost:8000](http://localhost:8000). Opening `web/index.html` directly with `file://` does not reliably work because the player fetches compiled `story.json`.
+Open http://localhost:8000. Opening the HTML via `file://` will not reliably load the compiled `story.json`.
 
-`npm run check` compiles `ink/wards_point_entry.ink` into `web/story.json`, copies the InkJS browser runtime into `web/ink.js`, then runs automated narrative route tests. `web/story.json` and `web/ink.js` are generated artifacts, deliberately not checked in.
+The reader supports **Continue reading** (five passages), **Reveal through next choice**, **Restart**, and an always-current read-only mission-state panel. There are no accounts, backend, images, or save-data dependencies; restart explores another route.
 
-## Source provenance
+## Implementation
 
-- `source/`: selected, preserved original design documents from the Wards Point Library vault (not the entire Obsidian archive).
-- `ink/`: playable adaptation, with both original dialogue and newly written navigation connective tissue clearly distinguished.
-- `web/`: static browser reader, no accounts or backend.
-- `tests/`: compiler and route assertions for briefings, security, optional consultations and missed-door recovery.
-- `docs/SOURCE_AUDIT.md`, `docs/TRACEABILITY.md`, `docs/ENTRY_SLICE.md`: documented fidelity and conversion choices.
+- `source/` — selected **unaltered original Markdown** design specifications and dialogue from the Obsidian vault. The selection is not the entire archive.
+- `ink/wards_point_entry.ink` — single complete narrative implementation, including the branching WPL_07 debrief.
+- `web/` — accessible responsive static HTML/CSS/JS reader powered by inkjs.
+- `scripts/compile.cjs` — compiles Ink and copies the browser runtime.
+- `tests/` — automated compilation, narrative route, continuity, and **source-dialogue integrity** tests.
+- `docs/` — original source traceability, implementation decisions, release status and historical vertical-slice documentation.
+- `.github/workflows/ink-check.yml` — check and preview artifact for every relevant branch / PR.
+- `.github/workflows/pages.yml` — rebuild and publish on merged `main`.
 
-The starting prompt chooses **inherited faction standing** for a standalone demo. In the full design, that standing selects the opening briefing, **not** the final library owner. Ownership is irrevocably committed only on the **first successful report and key handover**; the losing faction has a subsequent independent response. Those mechanics are documented but not yet implemented in the browser.
+The spoken dialogue is derived from the authored WPL_01, WPL_03, WPL_06 and WPL_07 scripts. Original Eli barks appear during exploration. Traversal, text-only combat abstractions, stage-direction rendering and connective interaction writing are adaptation work, not additional claims about the original game's implementation.
 
-## Preview and publishing
+## Source-defined boundaries
 
-On each pull request, GitHub Actions compiles and tests the story and produces a downloadable `wards-point-exploration-preview` artifact containing the self-contained browser files.
+- **Relationship setup:** The original campaign compares faction relationship values and defaults to Peacekeepers on ties or missing data. This standalone demo exposes those two starting contexts rather than claiming to integrate a campaign.
+- **No combat simulation:** Defeating infected and opening blocked doors are deliberate text actions, not stealth, combat or level-design systems.
+- **No forced evidence checklist:** Observations add context, but source completion is governed by security conditions.
+- **Reputation:** The losing faction's reputation consequence is recorded as a one-time Boolean event. The source explicitly leaves its numeric magnitude to the host game; none is invented.
+- **World-state:** Owner-specific later consequence paths become available after handover. The demo does not fabricate an occupied or transformed library.
+- **Original pacing:** The original full-length Peacekeeper briefing remains intact as a deliberate unedited baseline for later editorial review.
 
-A second workflow is prepared to publish the compiled `web/` site from `main` to GitHub Pages **after the PR is reviewed and merged**. In the repository Settings → Pages, set the publishing source to **GitHub Actions** before deployment. No live public site is claimed until the Pages workflow succeeds.
+## Testing and review
+
+Run `npm run check` to compile and execute all tests. The suite covers both opening variants, all 12 atrium question scripts, missed security and recovery, four first-report/winner/loser pairings, repeat-report protection, post-ownership routing, and direct quote checks against all seven dialogue source beats.
+
+See `docs/DEBRIEF_IMPLEMENTATION.md` and `docs/TRACEABILITY.md` for the exact state/event mapping and fidelity boundaries.
 
 ## Attribution
 
-Original quest writing and design © **Joseph Kristiansen**. Independent noncommercial portfolio exercise; not commissioned by, affiliated with or endorsed by Techland.
-
-All rights reserved unless a reuse license is explicitly added.
+Original quest design and writing © **Joseph Kristiansen**, all rights reserved. Original independent, noncommercial **Dying Light 2–style** narrative design exercise, **not** a commissioned, official, affiliated or endorsed Techland / Dying Light 2 production asset. No reuse or redistribution license is granted for original narrative material unless separately added.

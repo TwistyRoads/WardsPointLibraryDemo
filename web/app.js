@@ -10,7 +10,7 @@
   let story;
   let storyText;
 
-  const speakerPattern = /^(Eli|Peacekeeper representative|Bastion representative|Peacekeeper radio contact|Bastion radio contact):\s*(.*)$/;
+  const speakerPattern = /^(Eli|Peacekeeper representative|Bastion representative|Peacekeeper radio contact|Bastion radio contact|Offstage voice|Group):\s*(.*)$/;
   function addLine(raw) {
     const text = raw.trim();
     if (!text) return;
@@ -19,7 +19,7 @@
     line.className = 'line ' + (match ? 'speech' : 'narration');
     if (match) {
       const speaker = match[1];
-      line.classList.add(speaker === 'Eli' ? 'eli' : speaker.startsWith('Peacekeeper') ? 'pk' : 'bastion');
+      line.classList.add(speaker === 'Eli' ? 'eli' : speaker === 'Offstage voice' || speaker === 'Group' ? 'crowd' : speaker.startsWith('Peacekeeper') ? 'pk' : 'bastion');
       const label = document.createElement('span');
       label.className = 'speaker';
       label.textContent = speaker;
@@ -51,7 +51,12 @@
       ['Atrium deadbolt', currentValue('atrium_door_unlocked') ? 'Released' : 'Blocked'],
       ['Qualified atrium', currentValue('atrium_reached') ? 'Reached' : 'Pending'],
       ['Security', currentValue('secured') ? 'Secured' : 'Unresolved'],
-      ['Ownership', 'Undecided']
+      ['Ownership', currentValue('ownership') === 'PK' ? 'Peacekeepers' : currentValue('ownership') === 'BASTION' ? 'Bastion' : 'Undecided'],
+      ['Successful report', currentValue('report_complete') ? 'Complete' : 'Pending'],
+      ['Key handover', currentValue('key_transferred') ? 'Transferred' : 'Not transferred'],
+      ['Losing response', currentValue('losing_response_pending') ? 'Pending' : currentValue('losing_consequence_resolved') ? 'Resolved' : 'Not yet due'],
+      ['Relationship effect', currentValue('pk_reputation_effect_recorded') ? 'Peacekeepers: recorded' : currentValue('bastion_reputation_effect_recorded') ? 'Bastion: recorded' : 'Not recorded'],
+      ['Future world-state', currentValue('enduring_path_available') ? 'Owner path available' : 'Not yet available']
     ];
     stateNode.replaceChildren();
     for (const [name, value] of items) {
@@ -89,9 +94,12 @@
     continueButton.hidden = !story.canContinue;
     revealButton.hidden = !story.canContinue;
     if (!story.canContinue && story.currentChoices.length === 0) {
-      messageNode.textContent = currentValue('secured')
-        ? 'Wards Point secured. Restart to explore another route or faction.'
-        : 'This exploration run has ended. Restart to try another route or faction.';
+      const owner = currentValue('ownership');
+      messageNode.textContent = owner === 'PK' || owner === 'BASTION'
+        ? 'Wards Point belongs to ' + (owner === 'PK' ? 'the Peacekeepers' : 'Bastion') + '. ' + (currentValue('losing_response_pending') ? 'The other faction has not yet responded.' : 'The losing faction has responded.') + ' Restart to explore another outcome.'
+        : currentValue('secured')
+          ? 'Wards Point is secured but ownership is undecided. Restart to explore another route.'
+          : 'This run ended before the library was handed over. Restart to try another route.';
     } else {
       messageNode.textContent = '';
     }

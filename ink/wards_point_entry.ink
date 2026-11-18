@@ -19,6 +19,19 @@ VAR atrium_reached = false
 VAR atrium_intro_seen = false
 VAR inside_atrium = false
 VAR secured = false
+
+VAR ownership = ""
+VAR report_complete = false
+VAR key_transferred = false
+VAR pk_eligible = false
+VAR bastion_eligible = false
+VAR losing_response_pending = false
+VAR losing_consequence_resolved = false
+VAR pk_reputation_effect_recorded = false
+VAR bastion_reputation_effect_recorded = false
+VAR enduring_path_available = false
+VAR enduring_owner = ""
+VAR report_target = ""
 VAR departed = false
 VAR recovery_visits = 0
 VAR waldo_seen = false
@@ -106,6 +119,7 @@ Bastion representative: "It's not that they want to survive. Everyone wants to s
 Eli: "I don't follow."
 Bastion representative: "Listen man, you know what happened. We all know what happened. Harran was fucked up beyond all repair."
 Bastion representative: "I don't want to hear that song again man, do you?"
+Offstage voice: "FUBAR man!"
 Eli: "You mean the GRE?"
 Bastion representative: "Them, yeah. And everyone that thinks like them. Emergency powers, lockdowns, military in the street. That world is dying man. The center sitting on shit we all need. Fuck that man. We need to pull the plug."
 Eli: "Yeah... I have a few friends over there, maybe we can talk to them?"
@@ -126,6 +140,7 @@ Eli: "And that's it?"
 Bastion representative: "That's it man. Easy peasy and possession is 9/10ths of the law brother... You in?"
 Eli: "Yeah, I'm in."
 Bastion representative: "He's in boys! Eli is the man!"
+Group: "Yeah!"
 Bastion representative: "Good luck brother!"
 ~ brief_complete = true
 -> arrival
@@ -322,7 +337,9 @@ Eli: "Well... somebody kept everything."
 === elevator ===
 Repeated scrapes inside the open shaft suggest something has been travelling through it.
 ~ elevator_seen = true
-Eli: "Something's been using this... a lot"
+Eli: "Something's been using this..."
+Eli pauses.
+Eli: "a lot"
 -> basement
 
 === kitchen_entry ===
@@ -594,20 +611,300 @@ The far atrium exit closes and locks behind Eli. He cannot re-enter through it.
 }
 
 === secured_exit ===
-The library is secured. Eli still has the key, and no faction owns Wards Point yet.
-Reporting to a claimant and handing over the key will resolve ownership in the next release.
-* [Finish this exploration demo] -> END
+// Both claimants become eligible only after all five WPL_SECURED prerequisites.
+~ pk_eligible = true
+~ bastion_eligible = true
+The library is secured. Eli leaves with the entrance key still in his possession.
+Both factions are waiting for word. Nothing has been handed over.
+-> outside_contacts
 
 === early_exit ===
-// WPL_EVENT06_EARLY_EXIT; the permanent boss/atrium progression remains recorded.
-Wards Point is not yet secured. An incomplete mission cannot be handed over.
-If the entrance was left unlocked, the main floor and basement must be cleared again. The kitchen boss remains defeated.
-* [Return through the main public entrance to finish the job] -> recover_entry
-* [Finish this exploration demo without securing the building] -> END
+// WPL_EVENT06_EARLY_EXIT preserves the boss and qualified permanent discoveries.
+Wards Point is not secured. No claimant can yet receive the library.
+{ not entrance_secured:
+    The unsecured front entrance has invalidated the main-floor and basement clearance. The kitchen boss remains defeated.
+- else:
+    The remaining security objectives must still be finished before the report can succeed.
+}
++ [Return through the main public entrance to finish the job] -> recover_entry
++ [Attempt an incomplete report to the Peacekeepers] -> report_pk
++ [Attempt an incomplete report to Bastion] -> report_bastion
++ [End this run with the library unsecured] -> END
 
 === recover_entry ===
-// The far-end atrium exit stays locked; recovery uses the original front-door route.
+// Recover via public entrance, not the locked one-way atrium exit.
 ~ recovery_visits = recovery_visits + 1
 ~ departed = false
-Eli returns to the original public entrance. The atrium exit remains locked behind him.
+Eli returns through the original public entrance. The atrium exit remains locked behind him.
 -> foyer
+
+=== outside_contacts ===
+// This scene presents locations/people to visit, NOT an explicit owner-selection menu.
+{ ownership == "":
+    Eli has the entrance key. Both factions expect a report.
+- else:
+    The key has already been handed over. The ownership decision is final.
+}
++ [Speak with the Peacekeeper contact] -> report_pk
++ [Speak with the Bastion contact] -> report_bastion
++ { ownership != "" } [Consider the library's possible future under its new owner] -> owner_outlook
++ { ownership != "" } [Finish the Wards Point story] -> final_summary
+
+=== report_pk ===
+~ report_target = "PK"
+-> validate_report
+
+=== report_bastion ===
+~ report_target = "BASTION"
+-> validate_report
+
+=== validate_report ===
+// WPL_EVENT07_REPORT_ATTEMPT: ownership routing MUST precede security gating.
+// This knot does not commit ownership, transfer the key or apply reputation effects.
+{ ownership != "":
+    { report_target == ownership:
+        -> already_owner
+    - else:
+        { losing_response_pending:
+            -> select_loss
+        - else:
+            -> already_loser
+        }
+    }
+- else:
+    { not secured:
+        -> incomplete_report
+    - else:
+        { key_obtained && not report_complete && ((report_target == "PK" && pk_eligible) || (report_target == "BASTION" && bastion_eligible)):
+            -> select_win
+        - else:
+            -> invalid_handover
+        }
+    }
+}
+
+=== incomplete_report ===
+// No mission/faction mutations occur here: WPL_EVENT07_REPORT_ATTEMPT.
+{ not entrance_secured:
+    { report_target == initial_claimant:
+        { initial_claimant == "PK":
+            Peacekeeper representative: "You left the front entrance unsecured."
+        - else:
+            Bastion representative: "You left the front entrance unsecured."
+        }
+    - else:
+        The competing representative cannot accept a report on an unsecured building.
+    }
+- else:
+    The representative cannot accept the handover. Wards Point is not yet fully secure.
+}
+Eli still holds the key. Nobody has been awarded the library.
+* [Return to the public entrance and finish the outstanding work] -> recover_entry
+* [Leave the conversation without finishing this run] -> END
+
+=== invalid_handover ===
+The attempted handover cannot be completed. Eli must still hold the entrance key, and the building must be secured.
+-> outside_contacts
+
+=== select_win ===
+// The initial claimant determines which AUTHORED response is played, not who may win.
+{ report_target == "PK":
+    { initial_claimant == "PK":
+        -> pk_ic_win
+    - else:
+        -> pk_cc_win
+    }
+- else:
+    { initial_claimant == "BASTION":
+        -> bastion_ic_win
+    - else:
+        -> bastion_cc_win
+    }
+}
+
+=== pk_ic_win ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, PeaceKeeper Win - [[WPL_INITIAL_CLAIMANT]] = [PK].
+Eli: "Wards Point is secure."
+Peacekeeper representative: "And the key?"
+Eli offers the entrance key.
+Eli: "Here."
+Peacekeeper representative: "Thank you, Eli."
+Peacekeeper representative: "I know you still have your concerns."
+Eli: "Yeah."
+Peacekeeper representative: "You should. But this is the right call."
+Peacekeeper representative: "We'll make sure it matters."
+-> commit_win
+
+=== bastion_ic_win ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, Bastion Win - [[WPL_INITIAL_CLAIMANT]] = [BASTION].
+Eli: "Wards Point is secure."
+Bastion representative: "Yeah?"
+Eli offers the entrance key.
+Eli: "Yeah."
+Bastion representative: "Beautiful."
+Bastion representative: "Alright. I'll see who's around and get people moving."
+Eli: "That fast?"
+Bastion representative: "Brother, you gave us a building. I'm not gonna sit here admiring the key."
+-> commit_win
+
+=== pk_cc_win ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, PeaceKeeper Win - [[WPL_INITIAL_CLAIMANT]] = [BASTION].
+Eli: "Wards Point is secure."
+Peacekeeper radio contact: "And you're telling us."
+Eli offers the entrance key.
+Eli: "I'm giving it to you."
+The representative takes the key.
+Peacekeeper radio contact: "You didn't have to."
+Eli: "No."
+Peacekeeper radio contact: "Then thank you."
+Peacekeeper radio contact: "You gave us the chance, Eli."
+Peacekeeper radio contact: "We'll prove you were right to."
+-> commit_win
+
+=== bastion_cc_win ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, Bastion Win - [[WPL_INITIAL_CLAIMANT]] = [PK].
+Eli: "Wards Point is clear."
+Bastion radio contact: "Good."
+Eli offers the entrance key.
+The representative looks at the key.
+Bastion radio contact: "Shit."
+Eli: "What?"
+Bastion radio contact: "You actually came to us first."
+Eli: "Looks that way."
+Bastion radio contact: "Alright, brother."
+Bastion radio contact: "I'll find some people. We can start cleaning the place out before somebody changes their mind."
+-> commit_win
+
+=== pk_ic_loss ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, PeaceKeeper Loss - [[WPL_INITIAL_CLAIMANT]] = [PK].
+Eli: "Wards Point is secure."
+Peacekeeper representative: "I know."
+Peacekeeper representative: "They have the key?"
+Eli: "Yeah."
+Peacekeeper representative: "Then there's nothing else to discuss."
+-> commit_loss
+
+=== bastion_ic_loss ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, Bastion Loss - [[WPL_INITIAL_CLAIMANT]] = [BASTION].
+Eli: "Wards Point is secure."
+Bastion representative: "Yeah. Heard."
+Eli: "They've got it."
+Bastion representative: "Right."
+Bastion representative: "Guess we know where we stand."
+Eli: "That's not—"
+Bastion representative: "Don't."
+Bastion representative: "Not today."
+-> commit_loss
+
+=== pk_cc_loss ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, PeaceKeeper Loss - [[WPL_INITIAL_CLAIMANT]] = [BASTION].
+Eli: "Wards Point is secure."
+Peacekeeper radio contact: "And they have it."
+Eli: "Yeah."
+Peacekeeper radio contact: "I thought you might come to us."
+Eli: "I didn't."
+Peacekeeper radio contact: "No."
+Peacekeeper radio contact: "We'll take that into account."
+-> commit_loss
+
+=== bastion_cc_loss ===
+// Source-authored spoken dialogue: WPL_07_DEBRIEF, Bastion Loss - [[WPL_INITIAL_CLAIMANT]] = [PK].
+Eli: "Wards Point is clear."
+Bastion radio contact: "And you gave it to them."
+Eli: "Yeah."
+Bastion radio contact: "Alright, Eli."
+Bastion radio contact: "Good to know."
+-> commit_loss
+
+=== commit_win ===
+// WPL_EVENT07_WIN_RESOLUTION. Runs ONLY after the successful winner exchange.
+{ secured && ownership == "" && not report_complete && key_obtained && ((report_target == "PK" && pk_eligible) || (report_target == "BASTION" && bastion_eligible)):
+    ~ ownership = report_target
+    ~ report_complete = true
+    ~ key_obtained = false
+    ~ key_transferred = true
+    ~ pk_eligible = false
+    ~ bastion_eligible = false
+    ~ losing_response_pending = true
+    ~ losing_consequence_resolved = false
+    ~ enduring_path_available = true
+    ~ enduring_owner = ownership
+    The handover is complete. Wards Point now belongs to the receiving faction.
+    The other faction has not yet received Eli's explanation.
+    -> outside_contacts
+- else:
+    The handover could not be completed. Ownership has not been rewritten.
+    -> outside_contacts
+}
+
+=== select_loss ===
+// WPL_07_DEBRIEF: first claimant and losing faction determine response tone.
+{ report_target == "PK":
+    { initial_claimant == "PK":
+        -> pk_ic_loss
+    - else:
+        -> pk_cc_loss
+    }
+- else:
+    { initial_claimant == "BASTION":
+        -> bastion_ic_loss
+    - else:
+        -> bastion_cc_loss
+    }
+}
+
+=== commit_loss ===
+// WPL_EVENT07_LOSS_RESOLUTION: one-time relationship/reputation *record*;
+// the original vault deliberately leaves numeric magnitude to the campaign.
+{ ownership != "" && report_target != ownership && losing_response_pending:
+    ~ losing_response_pending = false
+    ~ losing_consequence_resolved = true
+    { report_target == "PK":
+        ~ pk_reputation_effect_recorded = true
+    - else:
+        ~ bastion_reputation_effect_recorded = true
+    }
+    The losing faction's response is resolved. Its relationship cost is recorded once; the precise numeric reputation change belongs to the wider campaign.
+    -> outside_contacts
+- else:
+    The losing-faction response was already resolved. No second relationship change occurs.
+    -> outside_contacts
+}
+
+=== already_owner ===
+// No winner replay and NO security revalidation after ownership commits.
+The receiving faction already has the key. There is no second handover.
+-> outside_contacts
+
+=== already_loser ===
+// The one-time losing response has been consumed.
+The other faction has already answered Eli's decision. No further Wards Point report is pending.
+-> outside_contacts
+
+=== owner_outlook ===
+// WPL_ENDURING_WORLD_STATE establishes only future PATH AVAILABILITY.
+// Descriptions below are possibilities, NOT implemented transformations.
+{ ownership == "PK":
+    The Peacekeepers could catalogue the municipal archive, maintain technical infrastructure, organize protected shelter and train people to replace lost skills.
+    That structure could also restrict access and turn responsibility into permanent authority. Protecting the vulnerable might eventually mean deciding for them.
+- else:
+    Bastion could make the atrium and meeting rooms into communal living, food-growing and shared educational space, with direct access to tools and records.
+    The cost could be fragmented preservation, hard choices between immediate survival and irreplaceable knowledge, and unofficial power without clear accountability.
+}
+These are the authored downstream consequence directions. This standalone story records which path is available; it does not simulate later occupation or transformation.
+-> outside_contacts
+
+=== final_summary ===
+{ ownership == "PK":
+    Wards Point has been entrusted to the Peacekeepers.
+- else:
+    Wards Point has been entrusted to Bastion.
+}
+{ losing_response_pending:
+    Eli has not yet spoken to the losing faction. Its response and reputation consequence remain unresolved.
+- else:
+    The losing faction has answered, and that relationship consequence has been recorded.
+}
+The story of the library's eventual use continues beyond this mission.
+* [End the story] -> END
+* { losing_response_pending } [Visit the still-waiting faction before finishing] -> outside_contacts
