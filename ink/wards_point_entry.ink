@@ -337,7 +337,9 @@ Eli: "Well... somebody kept everything."
 === elevator ===
 Repeated scrapes inside the open shaft suggest something has been travelling through it.
 ~ elevator_seen = true
-Eli: "Something's been using this... a lot"
+Eli: "Something's been using this..."
+Eli pauses.
+Eli: "a lot"
 -> basement
 
 === kitchen_entry ===
