@@ -119,6 +119,7 @@ Bastion representative: "It's not that they want to survive. Everyone wants to s
 Eli: "I don't follow."
 Bastion representative: "Listen man, you know what happened. We all know what happened. Harran was fucked up beyond all repair."
 Bastion representative: "I don't want to hear that song again man, do you?"
+Offstage voice: "FUBAR man!"
 Eli: "You mean the GRE?"
 Bastion representative: "Them, yeah. And everyone that thinks like them. Emergency powers, lockdowns, military in the street. That world is dying man. The center sitting on shit we all need. Fuck that man. We need to pull the plug."
 Eli: "Yeah... I have a few friends over there, maybe we can talk to them?"
@@ -139,6 +140,7 @@ Eli: "And that's it?"
 Bastion representative: "That's it man. Easy peasy and possession is 9/10ths of the law brother... You in?"
 Eli: "Yeah, I'm in."
 Bastion representative: "He's in boys! Eli is the man!"
+Group: "Yeah!"
 Bastion representative: "Good luck brother!"
 ~ brief_complete = true
 -> arrival
