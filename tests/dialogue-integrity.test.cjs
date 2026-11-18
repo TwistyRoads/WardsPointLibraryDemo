@@ -47,7 +47,13 @@ for (const [name,count] of files) {
     const passages = quotedPassages(source);
     assert.equal(passages.length,count,'Unexpected change in source quote inventory');
     for (const quote of passages) {
-      if (quote.includes('[returns to normal voice and separation]')) {
+      if (quote.includes('" [pause] "')) {
+        const fragments = quote.split('" [pause] "');
+        for (const fragment of fragments) {
+          assert.ok(ink.includes(normalize(fragment)), 'Missing paused dialogue fragment: ' + fragment.slice(0,120));
+        }
+        assert.ok(ink.includes('Eli pauses.'), 'The authored pause must remain visible');
+      } else if (quote.includes('[returns to normal voice and separation]')) {
         // Original one quotation spans two source lines with a mid-line stage cue.
         for (const fragment of quote.split('[returns to normal voice and separation]')) {
           assert.ok(ink.includes(normalize(fragment)), 'Missing multiline fragment: '+fragment.slice(0,120));
