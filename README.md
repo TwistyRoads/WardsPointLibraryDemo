@@ -4,7 +4,7 @@
 
 **Play on the web:** https://twistyroads.github.io/WardsPointLibraryDemo/
 
-> **Release status:** V0.03, complete playable narrative loop, prepared on `feature/full-debrief-and-resolution`. The public website shows the previous version until this branch is reviewed, merged, and Pages successfully deploys the new build.
+> **Release:** V0.03 is the complete playable narrative loop. GitHub Pages builds from `main`; after any update, the public URL may briefly show the previous version until the publishing workflow reports success. See [Actions](https://github.com/TwistyRoads/WardsPointLibraryDemo/actions).
 
 ## The experience
 
