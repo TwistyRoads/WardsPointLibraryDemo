@@ -17,6 +17,6 @@ jobs:
       - run: npm run check
       - uses: actions/upload-artifact@v4
         with:
-          name: wards-point-exploration-preview
+          name: wards-point-complete-quest-preview
           path: web/
           if-no-files-found: error
